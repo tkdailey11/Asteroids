@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8220A74B25F6DF04000EA80F /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8220A74A25F6DF04000EA80F /* Player.swift */; };
+		8220A74E25F6F24A000EA80F /* Keycode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8220A74D25F6F24A000EA80F /* Keycode.swift */; };
 		8270B8BD25F6B78500DF382A /* AsteroidsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8270B8BC25F6B78500DF382A /* AsteroidsApp.swift */; };
 		8270B8BF25F6B78500DF382A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8270B8BE25F6B78500DF382A /* ContentView.swift */; };
 		8270B8C125F6B78600DF382A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8270B8C025F6B78600DF382A /* Assets.xcassets */; };
@@ -17,6 +19,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		8220A74A25F6DF04000EA80F /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		8220A74D25F6F24A000EA80F /* Keycode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keycode.swift; sourceTree = "<group>"; };
 		8270B8B925F6B78500DF382A /* Asteroids.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroids.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8270B8BC25F6B78500DF382A /* AsteroidsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidsApp.swift; sourceTree = "<group>"; };
 		8270B8BE25F6B78500DF382A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -43,6 +47,8 @@
 		8270B8B025F6B78500DF382A = {
 			isa = PBXGroup;
 			children = (
+				8220A74D25F6F24A000EA80F /* Keycode.swift */,
+				8220A74A25F6DF04000EA80F /* Player.swift */,
 				8270B8CE25F6B7C000DF382A /* SpriteKit */,
 				8270B8BB25F6B78500DF382A /* Asteroids */,
 				8270B8BA25F6B78500DF382A /* Products */,
@@ -161,6 +167,8 @@
 				8270B8D025F6B85100DF382A /* GameScene.swift in Sources */,
 				8270B8BF25F6B78500DF382A /* ContentView.swift in Sources */,
 				8270B8D425F6B87000DF382A /* GameView.swift in Sources */,
+				8220A74E25F6F24A000EA80F /* Keycode.swift in Sources */,
+				8220A74B25F6DF04000EA80F /* Player.swift in Sources */,
 				8270B8BD25F6B78500DF382A /* AsteroidsApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

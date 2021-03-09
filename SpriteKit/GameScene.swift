@@ -8,12 +8,11 @@
 import SpriteKit
 
 struct PhysicsCategory {
-    static let none      : UInt32 = 0
-    static let all       : UInt32 = UInt32.max
-    static let monster   : UInt32 = 0b1       // 1
-    static let projectile: UInt32 = 0b10      // 2
+    static let none         : UInt32 = 0
+    static let all          : UInt32 = UInt32.max
+    static let asteroid     : UInt32 = 0b1       // 1
+    static let projectile   : UInt32 = 0b10      // 2
 }
-
 
 func +(left: CGPoint, right: CGPoint) -> CGPoint {
     return CGPoint(x: left.x + right.x, y: left.y + right.y)
@@ -49,30 +48,36 @@ extension CGPoint {
 
 class GameScene: SKScene {
     // 1
-    let player = SKSpriteNode(imageNamed: "player")
-    var monstersDestroyed = 0
+    let player = Player.instance
+    
+    var key: UInt16 = Keycode.upArrow
+    var previousFrameTime: CFTimeInterval?
+
+    override func update(_ currentTime: CFTimeInterval) {
+        let timeDelta = CGFloat(currentTime - (previousFrameTime ?? currentTime))
+        
+        player.update(key: key, timeDelta: timeDelta)
+        applyInfiniteScrollToNode(node: player.shapeNode, frame: self.frame)
+        
+        previousFrameTime = currentTime
+    }
+    
+    override func sceneDidLoad() {
+        backgroundColor = .black
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.9)
+        
+        print("loaded")
+    }
+    
+    override func didChangeSize(_ oldSize: CGSize) {
+        player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
+    }
     
     override func didMove(to view: SKView) {
-        // 2
-        backgroundColor = SKColor.white
-        // 3
-        player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
+        
         // 4
-        addChild(player)
+        addChild(player.shapeNode)
         
-        physicsWorld.gravity = .zero
-        physicsWorld.contactDelegate = self
-        
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(addMonster),
-                SKAction.wait(forDuration: 1.0)
-            ])
-        ))
-        
-        let backgroundMusic = SKAudioNode(fileNamed: "background-music-aac.caf")
-        backgroundMusic.autoplayLooped = true
-        addChild(backgroundMusic)
     }
     
     func random() -> CGFloat {
@@ -83,94 +88,56 @@ class GameScene: SKScene {
         return random() * (max - min) + min
     }
     
-    func addMonster() {
-        // Create sprite
-        let monster = SKSpriteNode(imageNamed: "monster")
-        monster.physicsBody = SKPhysicsBody(rectangleOf: monster.size) // 1
-        monster.physicsBody?.isDynamic = true // 2
-        monster.physicsBody?.categoryBitMask = PhysicsCategory.monster // 3
-        monster.physicsBody?.contactTestBitMask = PhysicsCategory.projectile // 4
-        monster.physicsBody?.collisionBitMask = PhysicsCategory.none // 5
-        
-        // Determine where to spawn the monster along the Y axis
-        let actualY = random(min: monster.size.height/2, max: size.height - monster.size.height/2)
-        
-        // Position the monster slightly off-screen along the right edge,
-        // and along a random position along the Y axis as calculated above
-        monster.position = CGPoint(x: size.width + monster.size.width/2, y: actualY)
-        
-        // Add the monster to the scene
-        addChild(monster)
-        
-        // Determine speed of the monster
-        let actualDuration = random(min: CGFloat(2.0), max: CGFloat(4.0))
-        
-        // Create the actions
-        let actionMove = SKAction.move(to: CGPoint(x: -monster.size.width/2, y: actualY),
-                                       duration: TimeInterval(actualDuration))
-        let actionMoveDone = SKAction.removeFromParent()
-        let loseAction = SKAction.run() { [weak self] in
-            guard let `self` = self else { return }
-            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: false)
-            self.view?.presentScene(gameOverScene, transition: reveal)
-        }
-        monster.run(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+    override func keyDown(with event: NSEvent) {
+//        print("Key Down")
+//        switch event.keyCode {
+//        case Keycode.upArrow:
+//            if player.position.y > size.height {
+//                player.position.y = 0
+//            }
+//            else {
+//                player.position.y += 10
+//            }
+//        case Keycode.downArrow:
+//            if player.position.y < 0 {
+//                player.position.y = size.height
+//            }
+//            else {
+//                player.position.y -= 10
+//            }
+//        case Keycode.leftArrow:
+//            if player.position.x < 0 {
+//                player.position.x = size.width
+//            }
+//            else {
+//                player.position.x -= 10
+//            }
+//        case Keycode.rightArrow:
+//            if player.position.x > size.width {
+//                player.position.x = 0
+//            }
+//            else {
+//                player.position.x += 10
+//            }
+//        default:
+//            print("Unmapped Key")
+//        }
+        self.key = event.keyCode
     }
     
-    override func mouseDown(with event: NSEvent){
-        let location = event.location(in: self)
-        
-        run(SKAction.playSoundFileNamed("pew-pew-lei.caf", waitForCompletion: false))
-        
-        // 2 - Set up initial location of projectile
-        let projectile = SKSpriteNode(imageNamed: "projectile")
-        projectile.position = player.position
-        projectile.physicsBody = SKPhysicsBody(circleOfRadius: projectile.size.width/2)
-        projectile.physicsBody?.isDynamic = true
-        projectile.physicsBody?.categoryBitMask = PhysicsCategory.projectile
-        projectile.physicsBody?.contactTestBitMask = PhysicsCategory.monster
-        projectile.physicsBody?.collisionBitMask = PhysicsCategory.none
-        projectile.physicsBody?.usesPreciseCollisionDetection = true
-        
-        // 3 - Determine offset of location to projectile
-        let offset = location - projectile.position
-        
-        // 4 - Bail out if you are shooting down or backwards
-        if offset.x < 0 { return }
-        
-        // 5 - OK to add now - you've double checked position
-        addChild(projectile)
-        
-        // 6 - Get the direction of where to shoot
-        let direction = offset.normalized()
-        
-        // 7 - Make it shoot far enough to be guaranteed off screen
-        let shootAmount = direction * 1000
-        
-        // 8 - Add the shoot amount to the current position
-        let realDest = shootAmount + projectile.position
-        
-        // 9 - Create the actions
-        let actionMove = SKAction.move(to: realDest, duration: 2.0)
-        let actionMoveDone = SKAction.removeFromParent()
-        projectile.run(SKAction.sequence([actionMove, actionMoveDone]))
-    }
-    
-    func projectileDidCollideWithMonster(projectile: SKSpriteNode, monster: SKSpriteNode) {
-        print("Hit")
-        projectile.removeFromParent()
-        monster.removeFromParent()
-        
-        monstersDestroyed += 1
-        if monstersDestroyed > 30 {
-            let reveal = SKTransition.flipHorizontal(withDuration: 0.5)
-            let gameOverScene = GameOverScene(size: self.size, won: true)
-            view?.presentScene(gameOverScene, transition: reveal)
+    func applyInfiniteScrollToNode(node: SKNode, frame: CGRect) {
+        if node.position.x > self.frame.width {
+            node.position.x = 0
+        } else if node.position.x < 0 {
+            node.position.x = self.frame.width
         }
         
+        if node.position.y > self.frame.height {
+            node.position.y = 0
+        } else if node.position.y < 0 {
+            node.position.y = self.frame.height
+        }
     }
-    
 }
 
 extension GameScene: SKPhysicsContactDelegate {
@@ -187,11 +154,11 @@ extension GameScene: SKPhysicsContactDelegate {
         }
         
         // 2
-        if ((firstBody.categoryBitMask & PhysicsCategory.monster != 0) &&
+        if ((firstBody.categoryBitMask & PhysicsCategory.asteroid != 0) &&
                 (secondBody.categoryBitMask & PhysicsCategory.projectile != 0)) {
             if let monster = firstBody.node as? SKSpriteNode,
                let projectile = secondBody.node as? SKSpriteNode {
-                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
+//                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
             }
         }
     }
