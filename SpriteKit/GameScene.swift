@@ -49,35 +49,43 @@ extension CGPoint {
 class GameScene: SKScene {
     // 1
     let player = Player.instance
-    
-    var key: UInt16 = Keycode.upArrow
     var previousFrameTime: CFTimeInterval?
 
     override func update(_ currentTime: CFTimeInterval) {
-        let timeDelta = CGFloat(currentTime - (previousFrameTime ?? currentTime))
+        //let timeDelta = CGFloat(currentTime - (previousFrameTime ?? currentTime))
+        if player.shouldDecelerate {
+            player.dY -= 0.1
+        }
+        player.position.y += player.dY
+        if player.position.y > size.height {
+            player.position.y = 0
+        }
+        else if player.position.y < 0 {
+            player.position.y = size.height
+        }
         
-        player.update(key: key, timeDelta: timeDelta)
-        applyInfiniteScrollToNode(node: player.shapeNode, frame: self.frame)
-        
+        player.position.x += player.dX
+        if player.position.x > size.width {
+            player.position.x = 0
+        }
+        else if player.position.x < 0 {
+            player.position.x = size.width
+        }
         previousFrameTime = currentTime
     }
     
     override func sceneDidLoad() {
         backgroundColor = .black
-        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.9)
-        
-        print("loaded")
+        addChild(player)
     }
     
     override func didChangeSize(_ oldSize: CGSize) {
-        player.position = CGPoint(x: size.width * 0.1, y: size.height * 0.5)
+        print("Width: \(size.width) Height: \(size.height)")
+        player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
     }
     
     override func didMove(to view: SKView) {
-        
-        // 4
-        addChild(player.shapeNode)
-        
+
     }
     
     func random() -> CGFloat {
@@ -89,53 +97,28 @@ class GameScene: SKScene {
     }
     
     override func keyDown(with event: NSEvent) {
-//        print("Key Down")
-//        switch event.keyCode {
-//        case Keycode.upArrow:
-//            if player.position.y > size.height {
-//                player.position.y = 0
-//            }
-//            else {
-//                player.position.y += 10
-//            }
-//        case Keycode.downArrow:
-//            if player.position.y < 0 {
-//                player.position.y = size.height
-//            }
-//            else {
-//                player.position.y -= 10
-//            }
-//        case Keycode.leftArrow:
-//            if player.position.x < 0 {
-//                player.position.x = size.width
-//            }
-//            else {
-//                player.position.x -= 10
-//            }
-//        case Keycode.rightArrow:
-//            if player.position.x > size.width {
-//                player.position.x = 0
-//            }
-//            else {
-//                player.position.x += 10
-//            }
-//        default:
-//            print("Unmapped Key")
-//        }
-        self.key = event.keyCode
+        switch event.keyCode {
+        case Keycode.upArrow:
+            player.dY += 1
+        case Keycode.downArrow:
+            player.dY -= 1
+        case Keycode.leftArrow:
+            player.dX -= 0.5
+        case Keycode.rightArrow:
+            player.dX += 0.5
+        case Keycode.space:
+            print("X: \(player.position.x) Y: \(player.position.y)")
+        default:
+            print("Unmapped Key")
+        }
     }
     
-    func applyInfiniteScrollToNode(node: SKNode, frame: CGRect) {
-        if node.position.x > self.frame.width {
-            node.position.x = 0
-        } else if node.position.x < 0 {
-            node.position.x = self.frame.width
-        }
-        
-        if node.position.y > self.frame.height {
-            node.position.y = 0
-        } else if node.position.y < 0 {
-            node.position.y = self.frame.height
+    override func keyUp(with event: NSEvent) {
+        switch event.keyCode {
+        case Keycode.upArrow:
+            player.shouldDecelerate = true
+        default:
+            print("Unmapped Key")
         }
     }
 }
@@ -156,10 +139,10 @@ extension GameScene: SKPhysicsContactDelegate {
         // 2
         if ((firstBody.categoryBitMask & PhysicsCategory.asteroid != 0) &&
                 (secondBody.categoryBitMask & PhysicsCategory.projectile != 0)) {
-            if let monster = firstBody.node as? SKSpriteNode,
-               let projectile = secondBody.node as? SKSpriteNode {
+//            if let monster = firstBody.node as? SKSpriteNode,
+//               let projectile = secondBody.node as? SKSpriteNode {
 //                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
-            }
+//            }
         }
     }
     

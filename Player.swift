@@ -8,78 +8,74 @@
 import Foundation
 import SpriteKit
 
-class Player {
+class Player: SKShapeNode {
     
-    static let instance = Player()
+    static let instance = Player.init(5)
     
-    static let MaxAcceleration: CGFloat = 10.0
-    static let MaxSpeed: CGFloat = 300.0
-    static let Deceleration: CGFloat = 0.995
-    var acceleration = CGPoint(x: 0, y: 0)
-    var velocity = CGPoint(x: 0, y: 0)
+    var shouldDecelerate: Bool = false
     
-    var shapeNode: SKShapeNode
-    var position: CGPoint {
+    private var _acc: CGFloat = 0
+    var acceleration: CGFloat {
         get {
-            return shapeNode.position
+            return _acc
         }
-        set(newPos) {
-            shapeNode.position = newPos
+        set {
+            if _acc > 20 {
+                _acc = 20
+            }
+            else if newValue < 0 {
+                _acc = 0
+            }
+            else {
+                _acc = newValue
+            }
         }
     }
     
-    private var points = [CGPoint(x: 0, y: 25),
-                          CGPoint(x: 15, y: -25),
-                          CGPoint(x: 0, y: -15),
-                          CGPoint(x: -15, y: -25),
-                          CGPoint(x: 0, y: 25)]
-
-    private init() {
-        shapeNode = SKShapeNode(points: &points, count: points.count)
-        shapeNode.strokeColor = .white
+    private var _angle: CGFloat = 0
+    var direction: CGFloat {
+        get {
+            return _angle
+        }
+        set {
+            if newValue > 10 {
+                _angle = 10
+            }
+            else if newValue < -10 {
+                _angle = -10
+            }
+            else {
+                _angle = newValue
+            }
+        }
     }
     
-    func update(key: UInt16, timeDelta: CGFloat) {
-
-        switch key {
-        case Keycode.upArrow:
-            accelerate()
-        case Keycode.downArrow:
-            stop()
-        default:
-            print("temp")
-        }
+    override init() {
+        super.init()
+    }
+    
+    convenience init(_ count: Int) {
+        self.init()
+        var points = [CGPoint(x: 0, y: 25),
+                              CGPoint(x: 15, y: -25),
+                              CGPoint(x: 0, y: -15),
+                              CGPoint(x: -15, y: -25),
+                              CGPoint(x: 0, y: 25)]
         
-        updateVelocity()
+        self.init(points: &points, count: points.count)
         
-        updatePosition(timeDelta: timeDelta)
+        createPhysicsBody()
+        dY = 0
     }
     
-    func accelerate() {
-        if acceleration.length() > Player.MaxAcceleration {
-            acceleration = acceleration * (Player.MaxAcceleration / acceleration.length())
+    func createPhysicsBody(){
+        if let p = self.path {
+            self.physicsBody = SKPhysicsBody(edgeLoopFrom: p)
         }
     }
     
-    func stop() {
-        acceleration = CGPoint(x: 0,y: 0)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
-    
-    func updateVelocity() {
-        if acceleration.length() > 0 {
-            velocity = velocity + acceleration
-        } else {
-            velocity = velocity * Player.Deceleration
-        }
-        
-        if velocity.length() > Player.MaxSpeed {
-            velocity = velocity * (Player.MaxSpeed / velocity.length())
-        }
-    }
-    
-    func updatePosition(timeDelta: CGFloat) {
-        shapeNode.position = shapeNode.position + velocity * timeDelta
-    }
-    
     
 }
