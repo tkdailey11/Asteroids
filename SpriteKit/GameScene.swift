@@ -6,6 +6,7 @@
 //
 
 import SpriteKit
+import VectorMath
 
 struct PhysicsCategory {
     static let none         : UInt32 = 0
@@ -14,63 +15,36 @@ struct PhysicsCategory {
     static let projectile   : UInt32 = 0b10      // 2
 }
 
-func +(left: CGPoint, right: CGPoint) -> CGPoint {
-    return CGPoint(x: left.x + right.x, y: left.y + right.y)
-}
-
-func -(left: CGPoint, right: CGPoint) -> CGPoint {
-    return CGPoint(x: left.x - right.x, y: left.y - right.y)
-}
-
-func *(point: CGPoint, scalar: CGFloat) -> CGPoint {
-    return CGPoint(x: point.x * scalar, y: point.y * scalar)
-}
-
-func /(point: CGPoint, scalar: CGFloat) -> CGPoint {
-    return CGPoint(x: point.x / scalar, y: point.y / scalar)
-}
-
-#if !(arch(x86_64) || arch(arm64))
-func sqrt(a: CGFloat) -> CGFloat {
-    return CGFloat(sqrtf(Float(a)))
-}
-#endif
-
-extension CGPoint {
-    func length() -> CGFloat {
-        return sqrt(x*x + y*y)
-    }
+struct ArrowKeys : OptionSet {
+    let rawValue: Int
+    init(rawValue: Int) { self.rawValue = rawValue }
     
-    func normalized() -> CGPoint {
-        return self / length()
-    }
+    static var None : ArrowKeys { return ArrowKeys(rawValue: 0) }
+    static var Up   : ArrowKeys { return ArrowKeys(rawValue: 1 << 0) }
+    static var Down : ArrowKeys { return ArrowKeys(rawValue: 1 << 1) }
+    static var Left : ArrowKeys { return ArrowKeys(rawValue: 1 << 2) }
+    static var Right: ArrowKeys { return ArrowKeys(rawValue: 1 << 3) }
+    static var Space: ArrowKeys { return ArrowKeys(rawValue: 1 << 4) }
 }
 
 class GameScene: SKScene {
     // 1
     let player = Player.instance
+    var participants: [Participant] = []
     var previousFrameTime: CFTimeInterval?
+    var keyDownFlag = false
+    var arrowKeys = ArrowKeys.None
 
     override func update(_ currentTime: CFTimeInterval) {
-        //let timeDelta = CGFloat(currentTime - (previousFrameTime ?? currentTime))
-        if player.shouldDecelerate {
-            player.dY -= 0.1
-        }
-        player.position.y += player.dY
-        if player.position.y > size.height {
-            player.position.y = 0
-        }
-        else if player.position.y < 0 {
-            player.position.y = size.height
-        }
+        let timeDelta = Scalar(currentTime - (previousFrameTime ?? currentTime))
         
-        player.position.x += player.dX
-        if player.position.x > size.width {
-            player.position.x = 0
+        player.update(keys: arrowKeys, timeDelta: timeDelta, frame: self.frame)
+        
+        for participant in participants {
+            participant.updatePosition(timeDelta: timeDelta, frame: self.frame)
         }
-        else if player.position.x < 0 {
-            player.position.x = size.width
-        }
+        participants = participants.filter { !$0.shouldBeRemoved }
+        
         previousFrameTime = currentTime
     }
     
@@ -80,7 +54,6 @@ class GameScene: SKScene {
     }
     
     override func didChangeSize(_ oldSize: CGSize) {
-        print("Width: \(size.width) Height: \(size.height)")
         player.position = CGPoint(x: size.width * 0.5, y: size.height * 0.1)
     }
     
@@ -88,62 +61,96 @@ class GameScene: SKScene {
 
     }
     
-    func random() -> CGFloat {
-        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
-    }
-    
-    func random(min: CGFloat, max: CGFloat) -> CGFloat {
-        return random() * (max - min) + min
-    }
-    
     override func keyDown(with event: NSEvent) {
-        switch event.keyCode {
-        case Keycode.upArrow:
-            player.dY += 1
-        case Keycode.downArrow:
-            player.dY -= 1
-        case Keycode.leftArrow:
-            player.dX -= 0.5
-        case Keycode.rightArrow:
-            player.dX += 0.5
-        case Keycode.space:
-            print("X: \(player.position.x) Y: \(player.position.y)")
-        default:
-            print("Unmapped Key")
-        }
+        keyDownFlag = true
+        interpretKeyEvents([event])
+        handleKeyEvent(event: event, keyDown: true)
     }
     
     override func keyUp(with event: NSEvent) {
-        switch event.keyCode {
+        keyDownFlag = false
+        interpretKeyEvents([event])
+        handleKeyEvent(event: event, keyDown: false)
+    }
+    
+    func handleKeyEvent(event: NSEvent, keyDown: Bool) {
+        let keyCode = event.keyCode
+        switch keyCode {
         case Keycode.upArrow:
-            player.shouldDecelerate = true
+            if keyDown {
+                arrowKeys.insert(.Up)
+            }
+            else {
+                arrowKeys.remove(.Up)
+            }
+        case Keycode.downArrow:
+            if keyDown {
+                arrowKeys.insert(.Down)
+            }
+            else {
+                arrowKeys.remove(.Down)
+            }
+        case Keycode.leftArrow:
+            if keyDown {
+                arrowKeys.insert(.Left)
+            }
+            else {
+                arrowKeys.remove(.Left)
+            }
+        case Keycode.rightArrow:
+            if keyDown {
+                arrowKeys.insert(.Right)
+            }
+            else {
+                arrowKeys.remove(.Right)
+            }
+            
+        case Keycode.space:
+            let nose = player.getNose()
+            let bullet = Bullet(startX: nose.x, startY: nose.y)
+            bullet.setVelocity(speed: BULLET_SPEED, direction: player.rotation)
+            addChild(bullet)
+            participants.append(bullet)
+            
+        case Keycode.f1:
+            let asteroid = Asteroid(Int.random(in: 1 ... 4))
+            asteroid.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
+            asteroid.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+            addChild(asteroid)
+            
         default:
-            print("Unmapped Key")
+            if keyDown {
+                arrowKeys.insert(.Space)
+            }
+            else {
+                arrowKeys.remove(.Space)
+            }
         }
     }
 }
 
-extension GameScene: SKPhysicsContactDelegate {
-    func didBegin(_ contact: SKPhysicsContact) {
-        // 1
-        var firstBody: SKPhysicsBody
-        var secondBody: SKPhysicsBody
-        if contact.bodyA.categoryBitMask < contact.bodyB.categoryBitMask {
-            firstBody = contact.bodyA
-            secondBody = contact.bodyB
-        } else {
-            firstBody = contact.bodyB
-            secondBody = contact.bodyA
-        }
-        
-        // 2
-        if ((firstBody.categoryBitMask & PhysicsCategory.asteroid != 0) &&
-                (secondBody.categoryBitMask & PhysicsCategory.projectile != 0)) {
-//            if let monster = firstBody.node as? SKSpriteNode,
-//               let projectile = secondBody.node as? SKSpriteNode {
-//                projectileDidCollideWithMonster(projectile: projectile, monster: monster)
-//            }
-        }
-    }
-    
-}
+//extension GameScene: SKPhysicsContactDelegate {
+//    func didBegin(_ contact: SKPhysicsContact) {
+//        let shockWaveAction: SKAction = {
+//            let growAndFadeAction = SKAction.group([SKAction.scale(to: 50, duration: 0.5),
+//                                                    SKAction.fadeOut(withDuration: 0.5)])
+//
+//            let sequence = SKAction.sequence([growAndFadeAction,
+//                                              SKAction.removeFromParent()])
+//
+//            return sequence
+//        }()
+//        print(contact.collisionImpulse)
+//        if contact.collisionImpulse > 5 &&
+//            contact.bodyA.node?.name == "ball" &&
+//            contact.bodyB.node?.name == "ball" {
+//
+//            let shockwave = SKShapeNode(circleOfRadius: 1)
+//
+//            shockwave.position = contact.contactPoint
+//            scene?.addChild(shockwave)
+//
+//            shockwave.run(shockWaveAction)
+//        }
+//    }
+//}

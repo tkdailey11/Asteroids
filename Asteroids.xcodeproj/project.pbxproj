@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,11 @@
 		8270B8C425F6B78600DF382A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8270B8C325F6B78600DF382A /* Preview Assets.xcassets */; };
 		8270B8D025F6B85100DF382A /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8270B8CF25F6B85100DF382A /* GameScene.swift */; };
 		8270B8D425F6B87000DF382A /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8270B8D325F6B87000DF382A /* GameView.swift */; };
+		8280D7C925F96D4B00CD9068 /* VectorMath in Frameworks */ = {isa = PBXBuildFile; productRef = 8280D7C825F96D4B00CD9068 /* VectorMath */; };
+		8280D7CD25F98F9500CD9068 /* Asteroid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D7CC25F98F9500CD9068 /* Asteroid.swift */; };
+		8280D7D025FA883200CD9068 /* Participant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D7CF25FA883200CD9068 /* Participant.swift */; };
+		8280D7D325FA90C600CD9068 /* Bullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D7D225FA90C600CD9068 /* Bullet.swift */; };
+		8280D81425FD4FA400CD9068 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D81325FD4FA400CD9068 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +34,10 @@
 		8270B8C625F6B78600DF382A /* Asteroids.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Asteroids.entitlements; sourceTree = "<group>"; };
 		8270B8CF25F6B85100DF382A /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		8270B8D325F6B87000DF382A /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		8280D7CC25F98F9500CD9068 /* Asteroid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asteroid.swift; sourceTree = "<group>"; };
+		8280D7CF25FA883200CD9068 /* Participant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Participant.swift; sourceTree = "<group>"; };
+		8280D7D225FA90C600CD9068 /* Bullet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bullet.swift; sourceTree = "<group>"; };
+		8280D81325FD4FA400CD9068 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8280D7C925F96D4B00CD9068 /* VectorMath in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -45,8 +55,9 @@
 		8270B8B025F6B78500DF382A = {
 			isa = PBXGroup;
 			children = (
+				8280D81325FD4FA400CD9068 /* Constants.swift */,
+				8280D7CB25F98F7D00CD9068 /* Components */,
 				8220A74D25F6F24A000EA80F /* Keycode.swift */,
-				8220A74A25F6DF04000EA80F /* Player.swift */,
 				8270B8CE25F6B7C000DF382A /* SpriteKit */,
 				8270B8BB25F6B78500DF382A /* Asteroids */,
 				8270B8BA25F6B78500DF382A /* Products */,
@@ -91,6 +102,17 @@
 			path = SpriteKit;
 			sourceTree = "<group>";
 		};
+		8280D7CB25F98F7D00CD9068 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				8220A74A25F6DF04000EA80F /* Player.swift */,
+				8280D7CC25F98F9500CD9068 /* Asteroid.swift */,
+				8280D7CF25FA883200CD9068 /* Participant.swift */,
+				8280D7D225FA90C600CD9068 /* Bullet.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -107,6 +129,9 @@
 			dependencies = (
 			);
 			name = Asteroids;
+			packageProductDependencies = (
+				8280D7C825F96D4B00CD9068 /* VectorMath */,
+			);
 			productName = Asteroids;
 			productReference = 8270B8B925F6B78500DF382A /* Asteroids.app */;
 			productType = "com.apple.product-type.application";
@@ -134,6 +159,9 @@
 				Base,
 			);
 			mainGroup = 8270B8B025F6B78500DF382A;
+			packageReferences = (
+				8280D7C725F96D4B00CD9068 /* XCRemoteSwiftPackageReference "VectorMath" */,
+			);
 			productRefGroup = 8270B8BA25F6B78500DF382A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -163,9 +191,13 @@
 				8270B8D025F6B85100DF382A /* GameScene.swift in Sources */,
 				8270B8BF25F6B78500DF382A /* ContentView.swift in Sources */,
 				8270B8D425F6B87000DF382A /* GameView.swift in Sources */,
+				8280D7D025FA883200CD9068 /* Participant.swift in Sources */,
+				8280D7CD25F98F9500CD9068 /* Asteroid.swift in Sources */,
+				8280D81425FD4FA400CD9068 /* Constants.swift in Sources */,
 				8220A74E25F6F24A000EA80F /* Keycode.swift in Sources */,
 				8220A74B25F6DF04000EA80F /* Player.swift in Sources */,
 				8270B8BD25F6B78500DF382A /* AsteroidsApp.swift in Sources */,
+				8280D7D325FA90C600CD9068 /* Bullet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +389,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8280D7C725F96D4B00CD9068 /* XCRemoteSwiftPackageReference "VectorMath" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/nicklockwood/VectorMath";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8280D7C825F96D4B00CD9068 /* VectorMath */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8280D7C725F96D4B00CD9068 /* XCRemoteSwiftPackageReference "VectorMath" */;
+			productName = VectorMath;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8270B8B125F6B78500DF382A /* Project object */;
 }

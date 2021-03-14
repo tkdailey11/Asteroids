@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "VectorMath",
+        "repositoryURL": "https://github.com/nicklockwood/VectorMath",
+        "state": {
+          "branch": null,
+          "revision": "2de2585f455dc8e15d642ca51b29b1917e68fd1e",
+          "version": "0.4.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
