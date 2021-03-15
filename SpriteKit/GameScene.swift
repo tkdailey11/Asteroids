@@ -31,6 +31,7 @@ class GameScene: SKScene {
     // 1
     let player = Player.instance
     var participants: [Participant] = []
+    var bulletCount: Int = 0
     var previousFrameTime: CFTimeInterval?
     var keyDownFlag = false
     var arrowKeys = ArrowKeys.None
@@ -39,9 +40,12 @@ class GameScene: SKScene {
         let timeDelta = Scalar(currentTime - (previousFrameTime ?? currentTime))
         
         player.update(keys: arrowKeys, timeDelta: timeDelta, frame: self.frame)
-        
+
         for participant in participants {
             participant.updatePosition(timeDelta: timeDelta, frame: self.frame)
+            if participant.type == ParticipantType.Bullet && participant.shouldBeRemoved {
+                bulletCount -= 1
+            }
         }
         participants = participants.filter { !$0.shouldBeRemoved }
         
@@ -106,11 +110,13 @@ class GameScene: SKScene {
             }
             
         case Keycode.space:
-            let nose = player.getNose()
-            let bullet = Bullet(startX: nose.x, startY: nose.y)
-            bullet.setVelocity(speed: BULLET_SPEED, direction: player.rotation)
-            addChild(bullet)
-            participants.append(bullet)
+            if bulletCount < 10 {
+                let nose = player.getNose()
+                let bullet = Bullet(start: nose, speed: player.velocity, direction: player.rotation)
+                addChild(bullet)
+                participants.append(bullet)
+                bulletCount += 1
+            }
             
         case Keycode.f1:
             let asteroid = Asteroid(Int.random(in: 1 ... 4))

@@ -34,6 +34,8 @@ class Player: Participant {
             self.physicsBody = SKPhysicsBody(polygonFrom: p)
             self.physicsBody?.affectedByGravity = false
         }
+        
+        super.type = .Player
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -65,7 +67,7 @@ class Player: Participant {
     }
 
     func getNose() -> Vector2 {
-        var nose = Vector2(0, 30)
+        var nose = Vector2(-0.3, 20)
         nose = transformPoint(nose)
         return nose
     }

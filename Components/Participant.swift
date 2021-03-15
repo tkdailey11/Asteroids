@@ -11,6 +11,8 @@ import VectorMath
 
 class Participant: SKShapeNode {
     
+    var type: ParticipantType = .Unassigned
+    
     var shouldBeRemoved: Bool = false
     
     var velocity = Vector2(0, 0)
@@ -42,7 +44,6 @@ class Participant: SKShapeNode {
     func accelerate() {
         acceleration = acceleration + Vector2(Scalar(cos(self.zRotation + CGFloat(Double.pi / 2))), Scalar(sin(self.zRotation + CGFloat(Double.pi / 2))))
         
-
         if acceleration.length > Player.MaxAcceleration {
             acceleration = acceleration * (Player.MaxAcceleration / acceleration.length)
         }
@@ -62,26 +63,6 @@ class Participant: SKShapeNode {
         if velocity.length > SPEED_LIMIT {
             velocity = velocity * (SPEED_LIMIT / velocity.length)
         }
-
-    }
-    
-//    func friction() {
-//        if velocity.x != 0 || velocity.y != 0 {
-//            let dX = FRICTION * velocity.x / sqrt(square(velocity.x) + square(velocity.y))
-//            let dY = FRICTION * velocity.y / sqrt(square(velocity.x) + square(velocity.y))
-//            if (abs(dX) > abs(velocity.x) || abs(dY) > abs(velocity.y)) {
-//                velocity = Vector2(0, 0)
-//            }
-//            else {
-//                velocity.x += dX
-//                velocity.y += dY
-//            }
-//        }
-//    }
-    
-    func setVelocity(speed: Scalar, direction: Scalar){
-        velocity.x = sin(direction) * speed
-        velocity.y = cos(direction) * speed
     }
     
     func updatePosition(timeDelta: Scalar, frame: CGRect) {

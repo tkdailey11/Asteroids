@@ -78,6 +78,8 @@ class Asteroid: Participant {
         
         self.physicsBody = SKPhysicsBody(circleOfRadius: max(self.frame.width / 2, self.frame.height / 2))
         self.physicsBody?.affectedByGravity = false
+        
+        super.type = .Asteroid
     }
     
     required init?(coder aDecoder: NSCoder) {
