@@ -20,6 +20,7 @@
 		8280D7D025FA883200CD9068 /* Participant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D7CF25FA883200CD9068 /* Participant.swift */; };
 		8280D7D325FA90C600CD9068 /* Bullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D7D225FA90C600CD9068 /* Bullet.swift */; };
 		8280D81425FD4FA400CD9068 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280D81325FD4FA400CD9068 /* Constants.swift */; };
+		82F9D10F260257FD008F60FD /* Structs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9D10E260257FD008F60FD /* Structs.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		8280D7CF25FA883200CD9068 /* Participant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Participant.swift; sourceTree = "<group>"; };
 		8280D7D225FA90C600CD9068 /* Bullet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bullet.swift; sourceTree = "<group>"; };
 		8280D81325FD4FA400CD9068 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		82F9D10E260257FD008F60FD /* Structs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Structs.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 		8270B8B025F6B78500DF382A = {
 			isa = PBXGroup;
 			children = (
+				82F9D10E260257FD008F60FD /* Structs.swift */,
 				8280D81325FD4FA400CD9068 /* Constants.swift */,
 				8280D7CB25F98F7D00CD9068 /* Components */,
 				8220A74D25F6F24A000EA80F /* Keycode.swift */,
@@ -191,6 +194,7 @@
 				8270B8D025F6B85100DF382A /* GameScene.swift in Sources */,
 				8270B8BF25F6B78500DF382A /* ContentView.swift in Sources */,
 				8270B8D425F6B87000DF382A /* GameView.swift in Sources */,
+				82F9D10F260257FD008F60FD /* Structs.swift in Sources */,
 				8280D7D025FA883200CD9068 /* Participant.swift in Sources */,
 				8280D7CD25F98F9500CD9068 /* Asteroid.swift in Sources */,
 				8280D81425FD4FA400CD9068 /* Constants.swift in Sources */,

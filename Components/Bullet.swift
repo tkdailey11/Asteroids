@@ -29,7 +29,10 @@ class Bullet: Participant {
         
         self.init(points: &points, count: points.count)
         self.position = CGPoint(x: CGFloat(start.x), y: CGFloat(start.y))
-        velocity = Vector2(cos(direction + Float(Double.pi / 2)) + speed.x, sin(direction + Float(Double.pi / 2)) + speed.y) * BULLET_SPEED
+        velocity = Vector2(cos(direction + Float(Double.pi / 2)), sin(direction + Float(Double.pi / 2))) * BULLET_SPEED
+        if velocity.length > BULLET_SPEED {
+            velocity = velocity * (BULLET_SPEED / velocity.length)
+        }
         zRotation = CGFloat(direction)
 
         self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: self.frame.height))
@@ -50,9 +53,5 @@ class Bullet: Participant {
             self.removeFromParent()
             self.shouldBeRemoved = true
         }
-    }
-    
-    func setVelocity(speed: Vector2, direction: Scalar){
-        
     }
 }
