@@ -10,8 +10,16 @@ import SpriteKit
 
 struct GameView: View {
     let scene: SKScene
+    @State var score = 0
 
     var body: some View {
+        HStack {
+            Spacer()
+            Text("Score: \(score)")
+                .font(.largeTitle)
+            Spacer()
+        }
+            
         GeometryReader { proxy in
             GameViewRepresentable(scene: scene, proxy: proxy)
         }

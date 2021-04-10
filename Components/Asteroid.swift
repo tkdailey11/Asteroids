@@ -76,10 +76,13 @@ class Asteroid: Participant {
         
         setScale(CGFloat(Float.random(in: 1.0 ... 5.0)))
         
-        self.physicsBody = SKPhysicsBody(circleOfRadius: max(self.frame.width / 2, self.frame.height / 2))
-        self.physicsBody?.affectedByGravity = false
+        let body = SKPhysicsBody(circleOfRadius: max(self.frame.width / 2, self.frame.height / 2))
+        body.affectedByGravity = false
+        body.contactTestBitMask = 0x00000001
+        self.physicsBody = body
         
         super.type = .Asteroid
+        self.name = "asteroid"
     }
     
     required init?(coder aDecoder: NSCoder) {

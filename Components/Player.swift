@@ -31,8 +31,10 @@ class Player: Participant {
         self.init(points: &points, count: points.count)
         
         if let p = self.path {
-            self.physicsBody = SKPhysicsBody(polygonFrom: p)
-            self.physicsBody?.affectedByGravity = false
+            let body = SKPhysicsBody(polygonFrom: p)
+            body.affectedByGravity = false
+            body.contactTestBitMask = 0x00000001
+            self.physicsBody = body
         }
         
         super.type = .Player

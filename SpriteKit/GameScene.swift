@@ -16,12 +16,12 @@ class GameScene: SKScene {
     var previousFrameTime: CFTimeInterval?
     var keyDownFlag = false
     var arrowKeys = ArrowKeys.None
-
+    
     override func update(_ currentTime: CFTimeInterval) {
         let timeDelta = Scalar(currentTime - (previousFrameTime ?? currentTime))
         
         player.update(keys: arrowKeys, timeDelta: timeDelta, frame: self.frame)
-
+        
         for participant in participants {
             participant.updatePosition(timeDelta: timeDelta, frame: self.frame)
             if participant.type == ParticipantType.Bullet && participant.shouldBeRemoved {
@@ -43,7 +43,7 @@ class GameScene: SKScene {
     }
     
     override func didMove(to view: SKView) {
-
+        physicsWorld.contactDelegate = self
     }
     
     override func keyDown(with event: NSEvent) {
@@ -116,28 +116,24 @@ class GameScene: SKScene {
     }
 }
 
-//extension GameScene: SKPhysicsContactDelegate {
-//    func didBegin(_ contact: SKPhysicsContact) {
-//        let shockWaveAction: SKAction = {
-//            let growAndFadeAction = SKAction.group([SKAction.scale(to: 50, duration: 0.5),
-//                                                    SKAction.fadeOut(withDuration: 0.5)])
-//
-//            let sequence = SKAction.sequence([growAndFadeAction,
-//                                              SKAction.removeFromParent()])
-//
-//            return sequence
-//        }()
-//        print(contact.collisionImpulse)
-//        if contact.collisionImpulse > 5 &&
-//            contact.bodyA.node?.name == "ball" &&
-//            contact.bodyB.node?.name == "ball" {
-//
-//            let shockwave = SKShapeNode(circleOfRadius: 1)
-//
-//            shockwave.position = contact.contactPoint
-//            scene?.addChild(shockwave)
-//
-//            shockwave.run(shockWaveAction)
-//        }
-//    }
-//}
+extension GameScene: SKPhysicsContactDelegate {
+    func didBegin(_ contact: SKPhysicsContact) {
+        if contact.bodyA.node != player && contact.bodyB.node != player {
+            if contact.bodyA.node?.name == "bullet" {
+                guard let b = contact.bodyA.node as? Bullet else {
+                    return
+                }
+                b.shouldBeRemoved = true
+                b.removeFromParent()
+                contact.bodyB.node?.removeFromParent()
+            } else if contact.bodyB.node?.name == "bullet" {
+                guard let b = contact.bodyB.node as? Bullet else {
+                    return
+                }
+                b.shouldBeRemoved = true
+                b.removeFromParent()
+                contact.bodyA.node?.removeFromParent()
+            }
+        }
+    }
+}

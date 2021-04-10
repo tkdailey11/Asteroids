@@ -35,10 +35,13 @@ class Bullet: Participant {
         }
         zRotation = CGFloat(direction)
 
-        self.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: self.frame.height))
-        self.physicsBody?.affectedByGravity = false
+        let body = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.width, height: self.frame.height))
+        body.contactTestBitMask = 0x00000001
+        body.affectedByGravity = false
+        self.physicsBody = body
         
         super.type = .Bullet
+        self.name = "bullet"
     }
     
     required init?(coder aDecoder: NSCoder) {
