@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct AsteroidsApp: App {
+    @State private var gameSettings = GameSettings()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(gs: self.gameSettings)
+                .frame(width: 1400, height: 900, alignment: .center)
         }
     }
 }

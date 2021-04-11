@@ -9,35 +9,41 @@ import SwiftUI
 import SpriteKit
 
 struct GameView: View {
-    let scene: SKScene
-    @State var score = 0
-
+    let scene: GameScene
+    @StateObject var settings = GameSettings()
+    
     var body: some View {
-        HStack {
-            Spacer()
-            Text("Score: \(score)")
-                .font(.largeTitle)
-            Spacer()
-        }
-            
-        GeometryReader { proxy in
-            GameViewRepresentable(scene: scene, proxy: proxy)
+        if settings.gameStarted {
+            VStack {
+                GameHeader()
+                if let sc = scene {
+                    GeometryReader { proxy in
+                        GameViewRepresentable(scene: sc, proxy: proxy)
+                    }
+                }
+            }
+            .environmentObject(settings)
+        } else {
+            LaunchScreen() {
+                settings.gameStarted = true
+            }
+            .environmentObject(settings)
         }
     }
 }
 
 struct GameViewRepresentable: NSViewRepresentable {
-    let scene: SKScene
+    let scene: GameScene
     let proxy: GeometryProxy
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
-
+    
     func makeNSView(context: Context) -> SKView {
         scene.size = proxy.size
         context.coordinator.scene = scene
-
+        
         let view = SKView()
         view.showsFPS = true
         view.showsNodeCount = true
@@ -46,14 +52,14 @@ struct GameViewRepresentable: NSViewRepresentable {
         view.presentScene(scene)
         return view
     }
-
+    
     func updateNSView(_ nsView: SKView, context: Context) {
         context.coordinator.resizeScene(proxy: proxy)
     }
-
+    
     class Coordinator: NSObject {
-        weak var scene: SKScene?
-
+        weak var scene: GameScene?
+        
         func resizeScene(proxy: GeometryProxy) {
             scene?.size = proxy.size
         }

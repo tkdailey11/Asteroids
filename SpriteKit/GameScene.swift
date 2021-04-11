@@ -7,15 +7,19 @@
 
 import SpriteKit
 import VectorMath
+import SwiftUI
 
 class GameScene: SKScene {
-    // 1
+    
     let player = Player.instance
     var participants: [Participant] = []
     var bulletCount: Int = 0
     var previousFrameTime: CFTimeInterval?
     var keyDownFlag = false
     var arrowKeys = ArrowKeys.None
+    
+    weak var scoreDelegate: UpdateScoreDelegate?
+    
     
     override func update(_ currentTime: CFTimeInterval) {
         let timeDelta = Scalar(currentTime - (previousFrameTime ?? currentTime))
@@ -35,7 +39,31 @@ class GameScene: SKScene {
     
     override func sceneDidLoad() {
         backgroundColor = .black
+        
         addChild(player)
+        addAsteroids()
+    }
+    
+    func addAsteroids() {
+        let asteroid1 = Asteroid(Int.random(in: 1 ... 4))
+        asteroid1.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
+        asteroid1.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        addChild(asteroid1)
+        
+        let asteroid2 = Asteroid(Int.random(in: 1 ... 4))
+        asteroid2.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
+        asteroid2.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        addChild(asteroid2)
+        
+        let asteroid3 = Asteroid(Int.random(in: 1 ... 4))
+        asteroid3.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
+        asteroid3.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        addChild(asteroid3)
+        
+        let asteroid4 = Asteroid(Int.random(in: 1 ... 4))
+        asteroid4.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
+        asteroid4.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        addChild(asteroid4)
     }
     
     override func didChangeSize(_ oldSize: CGSize) {
@@ -98,13 +126,6 @@ class GameScene: SKScene {
                 participants.append(bullet)
                 bulletCount += 1
             }
-            
-        case Keycode.f1:
-            let asteroid = Asteroid(Int.random(in: 1 ... 4))
-            asteroid.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
-            asteroid.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
-            addChild(asteroid)
-            
         default:
             if keyDown {
                 arrowKeys.insert(.Space)
@@ -126,6 +147,8 @@ extension GameScene: SKPhysicsContactDelegate {
                 b.shouldBeRemoved = true
                 b.removeFromParent()
                 contact.bodyB.node?.removeFromParent()
+                
+                scoreDelegate?.increaseScore()
             } else if contact.bodyB.node?.name == "bullet" {
                 guard let b = contact.bodyB.node as? Bullet else {
                     return
@@ -133,7 +156,13 @@ extension GameScene: SKPhysicsContactDelegate {
                 b.shouldBeRemoved = true
                 b.removeFromParent()
                 contact.bodyA.node?.removeFromParent()
+                
+                scoreDelegate?.increaseScore()
             }
         }
     }
+}
+
+protocol UpdateScoreDelegate: AnyObject {
+    func increaseScore()
 }

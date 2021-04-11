@@ -8,13 +8,33 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject private var settings: GameSettings
+    let scene: GameScene = GameScene()
+    @State private var updater: ScoreUpdater?
+    
+    init(gs: GameSettings) {
+        self.settings = gs
+    }
+    
     var body: some View {
-        GameView(scene: GameScene())
+        GameView(scene: scene, settings: settings)
+            .onAppear() {
+                updater = ScoreUpdater(gameScore: $settings.score)
+                scene.scoreDelegate = updater
+                print("appear")
+            }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+class ScoreUpdater: UpdateScoreDelegate {
+    
+    @Binding var score: Int
+    
+    init(gameScore: Binding<Int>) {
+        _score = gameScore
+    }
+    
+    func increaseScore() {
+        score += 1
     }
 }
