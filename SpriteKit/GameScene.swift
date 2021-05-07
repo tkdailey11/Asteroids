@@ -39,10 +39,10 @@ class GameScene: SKScene {
                 if participant.xScale >= 2.0 {
                     var pos = participant.position
                     pos.x -= 50
-                    let a1 = Asteroid(Int.random(in: 1 ... 4), scale: 1.0, position: pos)
+                    let a1 = Asteroid(variety: Int.random(in: 1 ... 4), scale: 1.0, position: pos)
 
                     pos.x += 100
-                    let a2 = Asteroid(Int.random(in: 1 ... 4), scale: 1.0, position: pos)
+                    let a2 = Asteroid(variety: Int.random(in: 1 ... 4), scale: 1.0, position: pos)
 
                     addChild(a1)
                     addChild(a2)
@@ -72,22 +72,22 @@ class GameScene: SKScene {
     func addAsteroids() {
         let scale: CGFloat = 2.0
         
-        let asteroid1 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
+        let asteroid1 = Asteroid(variety: Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid1)
         participants.append(asteroid1)
         asteroidCount += 1
 
-        let asteroid2 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
+        let asteroid2 = Asteroid(variety: Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid2)
         participants.append(asteroid2)
         asteroidCount += 1
 
-        let asteroid3 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
+        let asteroid3 = Asteroid(variety: Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid3)
         participants.append(asteroid3)
         asteroidCount += 1
 
-        let asteroid4 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
+        let asteroid4 = Asteroid(variety: Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid4)
         participants.append(asteroid4)
         asteroidCount += 1

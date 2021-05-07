@@ -14,20 +14,17 @@ class Bullet: Participant {
     var MaxTime: Scalar = 2.0
     var elapsedTime: Scalar = 0.0
     
-    override init() {
-        super.init()
-    }
-    
-    convenience init(start: Vector2, speed: Vector2, direction: Scalar) {
-        self.init()
+    init(start: Vector2, speed: Vector2, direction: Scalar) {
+//        var points = [CGPoint(x: 0, y: 0),
+//                      CGPoint(x: 0, y: 5),
+//                      CGPoint(x: 1, y: 5),
+//                      CGPoint(x: 1, y: 0),
+//                      CGPoint(x: 0, y: 0)]
+
+        // TODO: Set texture based on variety
+        let texture = SKTexture(imageNamed: "ball")
+        super.init(texture: texture, color: NSColor.white, size: texture.size())
         
-        var points = [CGPoint(x: 0, y: 0),
-                      CGPoint(x: 0, y: 5),
-                      CGPoint(x: 1, y: 5),
-                      CGPoint(x: 1, y: 0),
-                      CGPoint(x: 0, y: 0)]
-        
-        self.init(points: &points, count: points.count)
         self.position = CGPoint(x: CGFloat(start.x), y: CGFloat(start.y))
         velocity = Vector2(cos(direction + Float(Double.pi / 2)), sin(direction + Float(Double.pi / 2))) * BULLET_SPEED
         if velocity.length > BULLET_SPEED {
@@ -39,7 +36,7 @@ class Bullet: Participant {
         body.contactTestBitMask = 0x00000001
         body.affectedByGravity = false
         self.physicsBody = body
-        
+
         super.type = .Bullet
         self.name = "bullet"
     }

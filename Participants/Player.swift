@@ -11,18 +11,12 @@ import VectorMath
 
 class Player: Participant {
     
-    static let instance = Player.init(5)
+    static let instance = Player.init()
     static let RotationSpeed: Scalar = 5.0
     static let MaxAcceleration: Scalar = 10.0
     static let Deceleration: Scalar = 0.975
     
-    override init() {
-        super.init()
-    }
-    
-    convenience init(_ count: Int) {
-        self.init()
-        
+    init() {
         //With Flame
 //        var points = [CGPoint(x: 0, y: 20),
 //                      CGPoint(x: 12, y: -20),
@@ -34,22 +28,22 @@ class Player: Participant {
 //                      CGPoint(x: -12, y: -20),
 //                      CGPoint(x: 0, y: 20)]
         //Without Flame
-        var points = [CGPoint(x: 0, y: 20),
-                      CGPoint(x: 12, y: -20),
-                      CGPoint(x: 10, y: -13),
-                      CGPoint(x: -10, y: -13),
-                      CGPoint(x: -12, y: -20),
-                      CGPoint(x: 0, y: 20)]
+//        var points = [CGPoint(x: 0, y: 20),
+//                      CGPoint(x: 12, y: -20),
+//                      CGPoint(x: 10, y: -13),
+//                      CGPoint(x: -10, y: -13),
+//                      CGPoint(x: -12, y: -20),
+//                      CGPoint(x: 0, y: 20)]
         
-        self.init(points: &points, count: points.count)
+        // TODO: Set texture based on variety
+        let texture = SKTexture(imageNamed: "ball")
+        super.init(texture: texture, color: NSColor.white, size: texture.size())
         
-        if let p = self.path {
-            let body = SKPhysicsBody(polygonFrom: p)
-            body.affectedByGravity = false
-            body.contactTestBitMask = 0x00000001
-            self.physicsBody = body
-        }
-        
+        let body = SKPhysicsBody(circleOfRadius: max(self.frame.width / 2, self.frame.height / 2))
+        body.affectedByGravity = false
+        body.contactTestBitMask = 0x00000001
+        self.physicsBody = body
+
         super.type = .Player
     }
     

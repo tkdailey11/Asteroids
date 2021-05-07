@@ -9,7 +9,7 @@ import Foundation
 import SpriteKit
 import VectorMath
 
-class Participant: SKShapeNode {
+class Participant: SKSpriteNode {
     
     var type: ParticipantType = .Unassigned
     
@@ -27,14 +27,6 @@ class Participant: SKShapeNode {
         set {
             _radians = newValue
         }
-    }
-    
-    override init() {
-        super.init()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
     
     func rotate(delta: Scalar) {
