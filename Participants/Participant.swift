@@ -88,7 +88,6 @@ class Participant: SKShapeNode {
     
     func transformPoint(_ point: Vector2) -> Vector2 {
         var transform = AffineTransform.init(translationByX: CGFloat(self.position.x), byY: CGFloat(self.position.y))
-        //var transform = AffineTransform.init(scaleByX: CGFloat(self.position.x), byY: CGFloat(self.position.y))
         transform.rotate(byRadians: CGFloat(rotation))
         let res = transform.transform(NSPoint(point))
         return Vector2(Scalar(res.x), Scalar(res.y))

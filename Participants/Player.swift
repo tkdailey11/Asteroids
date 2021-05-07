@@ -22,11 +22,24 @@ class Player: Participant {
     
     convenience init(_ count: Int) {
         self.init()
-        var points = [CGPoint(x: 0, y: 25),
-                      CGPoint(x: 15, y: -25),
-                      CGPoint(x: 0, y: -15),
-                      CGPoint(x: -15, y: -25),
-                      CGPoint(x: 0, y: 25)]
+        
+        //With Flame
+//        var points = [CGPoint(x: 0, y: 20),
+//                      CGPoint(x: 12, y: -20),
+//                      CGPoint(x: 10, y: -13),
+//                      CGPoint(x: -5, y: -13),
+//                      CGPoint(x: 0, y: -24),
+//                      CGPoint(x: 5, y: -13),
+//                      CGPoint(x: -10, y: -13),
+//                      CGPoint(x: -12, y: -20),
+//                      CGPoint(x: 0, y: 20)]
+        //Without Flame
+        var points = [CGPoint(x: 0, y: 20),
+                      CGPoint(x: 12, y: -20),
+                      CGPoint(x: 10, y: -13),
+                      CGPoint(x: -10, y: -13),
+                      CGPoint(x: -12, y: -20),
+                      CGPoint(x: 0, y: 20)]
         
         self.init(points: &points, count: points.count)
         

@@ -10,9 +10,7 @@ import SwiftUI
 struct LaunchScreen: View {
     let startGame: () -> Void
     var body: some View {
-        Button("Start") {
-            startGame()
-        }
+        GameButton(title: "Start", action: startGame)
     }
 }
 

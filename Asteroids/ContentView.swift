@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject private var settings: GameSettings
     let scene: GameScene = GameScene()
-    @State private var updater: ScoreUpdater?
+    @State private var updater: StateUpdater?
     
     init(gs: GameSettings) {
         self.settings = gs
@@ -19,22 +19,8 @@ struct ContentView: View {
     var body: some View {
         GameView(scene: scene, settings: settings)
             .onAppear() {
-                updater = ScoreUpdater(gameScore: $settings.score)
-                scene.scoreDelegate = updater
-                print("appear")
+                updater = StateUpdater(gameScore: $settings.score, gameOver: $settings.gameOver)
+                scene.gameStateDelegate = updater
             }
-    }
-}
-
-class ScoreUpdater: UpdateScoreDelegate {
-    
-    @Binding var score: Int
-    
-    init(gameScore: Binding<Int>) {
-        _score = gameScore
-    }
-    
-    func increaseScore() {
-        score += 1
     }
 }

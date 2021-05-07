@@ -13,12 +13,13 @@ class GameScene: SKScene {
     
     let player = Player.instance
     var participants: [Participant] = []
+    var asteroidCount: Int = 0
     var bulletCount: Int = 0
     var previousFrameTime: CFTimeInterval?
     var keyDownFlag = false
     var arrowKeys = ArrowKeys.None
     
-    weak var scoreDelegate: UpdateScoreDelegate?
+    weak var gameStateDelegate: UpdateGameStateDelegate?
     
     
     override func update(_ currentTime: CFTimeInterval) {
@@ -31,10 +32,34 @@ class GameScene: SKScene {
             if participant.type == ParticipantType.Bullet && participant.shouldBeRemoved {
                 bulletCount -= 1
             }
+            if participant.type == ParticipantType.Asteroid && participant.shouldBeRemoved {
+                asteroidCount -= 1
+                
+                //add smaller asteroids
+                if participant.xScale >= 2.0 {
+                    var pos = participant.position
+                    pos.x -= 50
+                    let a1 = Asteroid(Int.random(in: 1 ... 4), scale: 1.0, position: pos)
+
+                    pos.x += 100
+                    let a2 = Asteroid(Int.random(in: 1 ... 4), scale: 1.0, position: pos)
+
+                    addChild(a1)
+                    addChild(a2)
+
+                    participants.append(a1)
+                    participants.append(a2)
+                    asteroidCount += 2
+                }
+            }
         }
         participants = participants.filter { !$0.shouldBeRemoved }
         
         previousFrameTime = currentTime
+        
+        if asteroidCount <= 0 {
+            gameStateDelegate?.toggleGameOver()
+        }
     }
     
     override func sceneDidLoad() {
@@ -45,25 +70,27 @@ class GameScene: SKScene {
     }
     
     func addAsteroids() {
-        let asteroid1 = Asteroid(Int.random(in: 1 ... 4))
-        asteroid1.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
-        asteroid1.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        let scale: CGFloat = 2.0
+        
+        let asteroid1 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid1)
-        
-        let asteroid2 = Asteroid(Int.random(in: 1 ... 4))
-        asteroid2.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
-        asteroid2.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        participants.append(asteroid1)
+        asteroidCount += 1
+
+        let asteroid2 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid2)
-        
-        let asteroid3 = Asteroid(Int.random(in: 1 ... 4))
-        asteroid3.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
-        asteroid3.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        participants.append(asteroid2)
+        asteroidCount += 1
+
+        let asteroid3 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid3)
-        
-        let asteroid4 = Asteroid(Int.random(in: 1 ... 4))
-        asteroid4.velocity = Vector2(Scalar(Int.random(in: 5 ... 100)), Scalar(Int.random(in: 5 ... 100)))
-        asteroid4.position = CGPoint(x: Double.random(in: 0.0 ... Double(frame.width)), y: Double.random(in: 0.0 ... Double(frame.height)))
+        participants.append(asteroid3)
+        asteroidCount += 1
+
+        let asteroid4 = Asteroid(Int.random(in: 1 ... 4), scale: scale, position: nil)
         addChild(asteroid4)
+        participants.append(asteroid4)
+        asteroidCount += 1
     }
     
     override func didChangeSize(_ oldSize: CGSize) {
@@ -140,29 +167,38 @@ class GameScene: SKScene {
 extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.node != player && contact.bodyB.node != player {
-            if contact.bodyA.node?.name == "bullet" {
-                guard let b = contact.bodyA.node as? Bullet else {
-                    return
-                }
-                b.shouldBeRemoved = true
-                b.removeFromParent()
-                contact.bodyB.node?.removeFromParent()
-                
-                scoreDelegate?.increaseScore()
-            } else if contact.bodyB.node?.name == "bullet" {
-                guard let b = contact.bodyB.node as? Bullet else {
-                    return
-                }
-                b.shouldBeRemoved = true
-                b.removeFromParent()
-                contact.bodyA.node?.removeFromParent()
-                
-                scoreDelegate?.increaseScore()
+            guard let nodeA = contact.bodyA.node, let nodeB = contact.bodyB.node else {
+                return
             }
+            
+            handleBulletAsteroidCollision(nodeA: nodeA, nodeB: nodeB)
         }
     }
-}
-
-protocol UpdateScoreDelegate: AnyObject {
-    func increaseScore()
+    
+    func handleBulletAsteroidCollision(nodeA: SKNode, nodeB: SKNode) {
+        if nodeA.name == "bullet" {
+            guard let bullet = nodeA as? Bullet, let asteroid = nodeB as? Asteroid else {
+                return
+            }
+            bullet.shouldBeRemoved = true
+            bullet.removeFromParent()
+            
+            asteroid.shouldBeRemoved = true
+            asteroid.removeFromParent()
+            
+            gameStateDelegate?.updateScore(1)
+        } else if nodeB.name == "bullet" {
+            guard let bullet = nodeB as? Bullet, let asteroid = nodeA as? Asteroid else {
+                return
+            }
+            
+            bullet.shouldBeRemoved = true
+            bullet.removeFromParent()
+            
+            asteroid.shouldBeRemoved = true
+            asteroid.removeFromParent()
+            
+            gameStateDelegate?.updateScore(1)
+        }
+    }
 }

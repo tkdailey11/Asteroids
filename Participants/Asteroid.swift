@@ -13,9 +13,16 @@ class Asteroid: Participant {
     
     override init() {
         super.init()
+        
+        let speed = Float.random(in: ASTEROID_SPEED ... SPEED_LIMIT)
+        let dX = Float.random(in: -1 ... 1)
+        let dY = Float.random(in: -1 ... 1)
+        self.velocity = Vector2(dX, dY) * speed
+        self.rotation = Float.random(in: 0.0 ... 1.0)
+        self.zRotation = CGFloat(rotation)
     }
     
-    convenience init(_ variety: Int) {
+    convenience init(_ variety: Int, scale: CGFloat, position: CGPoint?) {
         self.init()
         var variety1 = [CGPoint(x: 0, y: -30),
                         CGPoint(x: 28, y: -15),
@@ -73,8 +80,8 @@ class Asteroid: Participant {
         default:
             self.init(points: &variety4, count: variety4.count)
         }
-        
-        setScale(CGFloat(Float.random(in: 1.0 ... 5.0)))
+
+        setScale(scale)
         
         let body = SKPhysicsBody(circleOfRadius: max(self.frame.width / 2, self.frame.height / 2))
         body.affectedByGravity = false
@@ -83,9 +90,16 @@ class Asteroid: Participant {
         
         super.type = .Asteroid
         self.name = "asteroid"
+        
+        if let point = position {
+            self.position = point
+        } else {
+            self.position = CGPoint(x: Double.random(in: 0.0 ... 1000.0), y: Double.random(in: 0.0 ... 800.0))
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
 }

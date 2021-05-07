@@ -13,7 +13,7 @@ struct GameView: View {
     @StateObject var settings = GameSettings()
     
     var body: some View {
-        if settings.gameStarted {
+        if settings.gameStarted && !settings.gameOver {
             VStack {
                 GameHeader()
                 if let sc = scene {
@@ -23,7 +23,15 @@ struct GameView: View {
                 }
             }
             .environmentObject(settings)
-        } else {
+        } else if settings.gameOver {
+            Spacer()
+            GameLabel(content: "Game Over", font: .joystixHeader)
+            Spacer()
+            GameButton(title: "Play Again") {
+                print("Play Again")
+            }
+            Spacer()
+        }else {
             LaunchScreen() {
                 settings.gameStarted = true
             }
